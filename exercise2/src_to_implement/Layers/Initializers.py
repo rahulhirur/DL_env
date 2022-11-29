@@ -60,7 +60,6 @@ class Xavier:
         self.weights = np.random.normal(0, self.std, size = self.weights_shape)
 
         return self.weights
-        # self.weights = np.random.rand(self.weight_shape, self.fan_in, self.fan_out)
 
 class He:
 
