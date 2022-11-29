@@ -28,6 +28,9 @@ class UniformRandom:
 
         self.kernel_height, self.kernel_width = self.weights_shape
 
+        self.fan_in = self.input_channels * self.kernel_height * self.kernel_width
+        self.fan_out = self.output_channels * self.kernel_height * self.kernel_width
+
         self.weights = np.random.rand(self.weight_shape, self.fan_in, self.fan_out)
 
         return self.weights
@@ -48,7 +51,7 @@ class Xavier:
         self.kernel_height, self.kernel_width = self.weights_shape
 
         self.fan_in = self.input_channels * self.kernel_height * self.kernel_width
-        self.fan_out = self.output_channels * self.kernel_width
+        self.fan_out = self.output_channels * self.kernel_height * self.kernel_width
         self.std = np.sqrt(2/(self.fan_in + self.fan_out))
 
         self.weights = np.random.normal(0, self.std, size = self.weights_shape)
@@ -72,7 +75,7 @@ class He:
         self.kernel_height, self.kernel_width = self.weights_shape
 
         self.fan_in = self.input_channels * self.kernel_height * self.kernel_width
-        self.fan_out = self.output_channels * self.kernel_width
+        self.fan_out = self.output_channels * self.kernel_height * self.kernel_width
         self.std = np.sqrt(2/(self.fan_in + self.fan_out))
 
         self.weights = np.random.normal(0, self.std, size = self.weights_shape)
