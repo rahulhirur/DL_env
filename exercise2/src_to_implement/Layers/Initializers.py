@@ -31,10 +31,7 @@ class UniformRandom:
 
         self.kernel_height, self.kernel_width = self.weights_shape
 
-        self.fan_in = self.input_channels * self.kernel_height * self.kernel_width
-        self.fan_out = self.output_channels * self.kernel_height * self.kernel_width
-
-        self.weights = np.random.rand(self.weight_shape, self.fan_in, self.fan_out)
+        self.weights = np.random.rand(self.weight_shape)
 
         return self.weights
 
