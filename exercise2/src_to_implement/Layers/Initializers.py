@@ -10,9 +10,12 @@ class Constant:
         self.kernel_width = None
 
     def initialize(self, weights_shape, fan_in, fan_out):
-        self.kernel_height, self.kernel_width = weights_shape
-        self.weights = np.full(weights_shape, self.constant_value)
+        self.kernel_height, self.kernel_width = self.weights_shape
+
+        self.weights = np.full((self.weights_shape), self.constant_value)
+
         return self.weights
+
 
 class UniformRandom:
 
@@ -26,7 +29,9 @@ class UniformRandom:
 
     def initialize(self, weights_shape, fan_in, fan_out):
         self.kernel_height, self.kernel_width = self.weights_shape
+
         self.weights = np.random.rand(self.weight_shape)
+
         return self.weights
 
 
