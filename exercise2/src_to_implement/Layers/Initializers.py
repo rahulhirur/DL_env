@@ -6,13 +6,9 @@ class Constant:
     def __init__(self, constant_value=0.1):
         self.constant_value = constant_value
         self.weights = None
-        self.kernel_height = None
-        self.kernel_width = None
 
-    def initialize(self, weights_shape, fan_in, fan_out):
-        self.kernel_height, self.kernel_width = self.weights_shape
-
-        self.weights = np.full((self.weights_shape), self.constant_value)
+    def initialize(self, weights_shape, fan_in=None, fan_out=None):
+        self.weights = np.full(weights_shape, self.constant_value)
 
         return self.weights
 
@@ -20,39 +16,24 @@ class Constant:
 class UniformRandom:
 
     def __init__(self):
-        self.kernel_height = None
-        self.kernel_width = None
-        self.input_channels = None
-        self.output_channels = None
-        self.fan_in = None
-        self.fan_out = None
+        self.weights = None
 
-    def initialize(self, weights_shape, fan_in, fan_out):
-        self.kernel_height, self.kernel_width = self.weights_shape
+    def initialize(self, weights_shape, fan_in=None, fan_out=None):
 
-        self.weights = np.random.rand(self.weight_shape)
-
+        self.weights = np.random.rand(weights_shape[0], weights_shape[1])
         return self.weights
 
 
 class Xavier:
 
     def __init__(self):
-        self.kernel_height = None
-        self.kernel_width = None
-        self.input_channels = None
-        self.output_channels = None
-        self.fan_in = None
-        self.fan_out = None
+        self.weights = None
 
     def initialize(self, weights_shape, fan_in, fan_out):
-        self.kernel_height, self.kernel_width = self.weights_shape
-
-        self.fan_in = self.input_channels * self.kernel_height * self.kernel_width
-        self.fan_out = self.output_channels * self.kernel_height * self.kernel_width
-        self.std = np.sqrt(2 / (self.fan_in + self.fan_out))
-
-        self.weights = np.random.normal(0, self.std, size=self.weights_shape)
+        # fan_in =  input_channels *  kernel_height * kernel_width
+        # fan_out = output_channels * kernel_height * kernel_width
+        std = np.sqrt(2 / (fan_in + fan_out))
+        self.weights = np.random.normal(0, std, size=weights_shape)
 
         return self.weights
 
@@ -60,20 +41,10 @@ class Xavier:
 class He:
 
     def __init__(self):
-        self.kernel_height = None
-        self.kernel_width = None
-        self.input_channels = None
-        self.output_channels = None
-        self.fan_in = None
-        self.fan_out = None
+        self.weights = None
 
-    def initialize(self, weights_shape, fan_in, fan_out):
-        self.kernel_height, self.kernel_width = self.weights_shape
-
-        self.fan_in = self.input_channels * self.kernel_height * self.kernel_width
-        self.fan_out = self.output_channels * self.kernel_height * self.kernel_width
-        self.std = np.sqrt(2 / (self.fan_in + self.fan_out))
-
-        self.weights = np.random.normal(0, self.std, size=self.weights_shape)
+    def initialize(self, weights_shape, fan_in, fan_out=None):
+        std = np.sqrt(2 / fan_in)
+        self.weights = np.random.normal(0, std, size=weights_shape)
 
         return self.weights
