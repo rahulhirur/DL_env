@@ -17,10 +17,10 @@ class Conv:
 
     def forward(self, input_tensor):
         self.input_tensor = input_tensor
+        self.forward_output = np.ones(((input_tensor.shape[0] - self.kernel_height[0]) / self.stride_shape)+1)
         for i in range(self.num_kernels):
             for j in range(self.convolution_shape[0]):
-
-        pass
+                self.forward_output[i] = signal.correlate2d()
 
     def backward(self, error_tensor):
         pass
