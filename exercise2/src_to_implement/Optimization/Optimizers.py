@@ -54,6 +54,7 @@ class SgdWithMomentum:
         return np.add(weight_tensor, self.prev_velocity)
 
 
+# Adam Optimizers
 class Adam:
 
     # __init__ is the constructor class
