@@ -53,4 +53,6 @@ class FullyConnected(BaseLayer):
 
     # This is extra when compared to previous exercise, The method intakes weights and bias and concatenate the data
     def initialize(self, weights_initializer, bias_initializer):
+        # self.weights = weights_initializer.initialize(self.weights.shape, self.input_size, self.output_size)
+        # self.bias = bias_initializer.initialize(self.bias.shape, 1, self.output_size)
         self.weights = np.concatenate((weights_initializer, bias_initializer), axis=0)
