@@ -4,6 +4,7 @@ import warnings
 import copy
 
 from Layers.Base import BaseLayer
+from Optimization import Optimizers
 
 
 class Conv(BaseLayer):
