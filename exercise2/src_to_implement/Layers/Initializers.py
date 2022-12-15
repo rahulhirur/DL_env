@@ -20,7 +20,7 @@ class UniformRandom:
 
     def initialize(self, weights_shape, fan_in=None, fan_out=None):
 
-        self.weights = np.random.rand(weights_shape[0], weights_shape[1])
+        self.weights = np.random.rand(*weights_shape)
         return self.weights
 
 

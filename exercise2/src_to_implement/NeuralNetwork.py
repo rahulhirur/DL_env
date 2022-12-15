@@ -38,7 +38,7 @@ class NeuralNetwork:
         if layer.trainable:
             layer.optimizer = copy.deepcopy(self.optimizer)
 # Initialize the weights and bias
-        layer.initialize(self.weights_initializer, self.bias_initializer)
+            layer.initialize(self.weights_initializer, self.bias_initializer)
         self.layers.append(layer)
 
     def train(self, iterations):

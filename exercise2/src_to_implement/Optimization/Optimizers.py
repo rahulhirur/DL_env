@@ -88,8 +88,8 @@ class Adam:
 
     def calculate_update(self, weight_tensor, gradient_tensor):
 
-        self.prev_velocity = self.mu * self.prev_velocity + (1-self.mu) * gradient_tensor
-        self.prev_moment = self.rho * self.prev_moment + (1 - self.rho) * (gradient_tensor * gradient_tensor)
+        self.prev_velocity = (self.mu * self.prev_velocity) + ((1-self.mu) * gradient_tensor)
+        self.prev_moment = (self.rho * self.prev_moment) + ((1 - self.rho) * (gradient_tensor * gradient_tensor))
 
         fin_v = (1/ (1-(self.mu ** self.entry))) * self.prev_velocity
 

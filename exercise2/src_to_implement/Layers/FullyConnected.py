@@ -17,7 +17,7 @@ class FullyConnected(BaseLayer):
         self.output_size = output_size
         self.trainable = True
         # Initialize weights to carry bias in last row
-        self.weights = None
+        self.weights = np.random.rand(input_size + 1, output_size)
 
     def forward(self, input_tensor):
         # wx+b*1
