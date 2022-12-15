@@ -112,14 +112,15 @@ class Conv(BaseLayer):
                                                  self.stride_shape[1]) + 1)))
 
         input_tensor_shape = input_tensor.shape
-        if self.is1dConv:
-            if input_tensor_shape[2] - self.convolution_shape[0] <= 3:
-                warnings.warn("Warning - Input is too small for the given convolution shape")
-
-        else:
-            if (input_tensor_shape[2] - self.convolution_shape[1] <= 3 or
-                    input_tensor_shape[3] - self.convolution_shape[2] <= 3):
-                warnings.warn("Warning - Input is too small for the given convolution shape")
+        # if self.is1dConv:
+        #     if input_tensor_shape[2] - self.convolution_shape[0] <= 3:
+        #
+        #         # warnings.warn("Warning - Input is too small for the given convolution shape")
+        #
+        # else:
+        #     if (input_tensor_shape[2] - self.convolution_shape[1] <= 3 or
+        #             input_tensor_shape[3] - self.convolution_shape[2] <= 3):
+        #         # warnings.warn("Warning - Input is too small for the given convolution shape")
 
         for i in range(input_tensor_shape[0]):
             for j in range(self.num_kernels):
@@ -183,7 +184,7 @@ class Conv(BaseLayer):
             self.pad_y = np.floor(self.convolution_shape[1] / 2)
             self.as_y = 0
         else:
-            warnings.warn("Convolution shape is invalid. Defaulting to no padding in vertical direction")
+            # warnings.warn("Convolution shape is invalid. Defaulting to no padding in vertical direction")
             self.pad_y = 0
             self.as_y = 0
 
@@ -202,7 +203,7 @@ class Conv(BaseLayer):
                 self.as_x = 0
 
             else:
-                warnings.warn("Convolution shape is invalid. Defaulting to no padding in horizontal direction")
+                # warnings.warn("Convolution shape is invalid. Defaulting to no padding in horizontal direction")
                 self.pad_x = 0
                 self.as_x = 0
 
