@@ -28,11 +28,14 @@ class NeuralNetwork:
 
     def forward(self):
         self.value_in, self.value_out = self.data_layer.next()
+        tmp_norm_sum = 0
         for layer in self.layers:
             layer.testing_phase = self.phase
             self.value_in = layer.forward(self.value_in)
+            tmp_norm_sum += layer.norm_sum
 
-        self.value_in = self.loss_layer.forward(self.value_in, self.value_out)
+        self.value_in = self.loss_layer.forward(self.value_in, self.value_out) + tmp_norm_sum
+
         self.loss.append(self.value_in)
 
         return self.value_in

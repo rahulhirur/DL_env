@@ -8,3 +8,4 @@ class BaseLayer:
         self.trainable = False
         self.testing_phase = False
         self.weights = np.array([])
+        self.norm_sum = 0
