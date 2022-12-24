@@ -74,6 +74,7 @@ class Conv(BaseLayer):
     @property
     def bias_optimizer(self):
         return self._bias_optimizer
+
     @property
     def gradient_weights(self):
         return self._gradient_weights
@@ -91,9 +92,10 @@ class Conv(BaseLayer):
         self._gradient_bias = value
 
     def forward(self, input_tensor):
+
+        # rnn layer cnn layer
         self.input_tensor = input_tensor
 
-        # Shape of Forward Output = Batch Size, Number of Kernels, o_along_height, o_along_width
         if self.is1dConv:
             self.forward_output = np.zeros((input_tensor.shape[0],
                                             self.num_kernels,
