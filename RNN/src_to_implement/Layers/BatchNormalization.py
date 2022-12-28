@@ -70,14 +70,18 @@ class BatchNormalization(BaseLayer):
         self.input_tensor = input_tensor
         self.is_convolutional = len(input_tensor.shape) == 4
         # is_not_convolutional = len(input_tensor.shape) == 2
-
-        input_tensor = self.reformat(input_tensor)
+        if self.is_convolutional:
+            input_tensor = self.reformat(input_tensor)
 
         if self.testing_phase:
 
             # use mean test calculated in training time
-            input_tensor_normalized = (input_tensor - self.mean_test) / np.sqrt(self.variance_test + self.epsilon)
-            self.forward_output = input_tensor_normalized * self.weights + self.bias
+            self.input_tensor_normalized = (input_tensor - self.mean_test) / np.sqrt(self.variance_test + self.epsilon)
+            # Calculate forward output
+            if self.is_convolutional:
+                self.forward_output = self.reformat(self.input_tensor_normalized * self.weights + self.bias)
+            else:
+                self.forward_output = self.input_tensor_normalized * self.weights + self.bias
 
         else:
 
@@ -90,7 +94,11 @@ class BatchNormalization(BaseLayer):
                 self.variance_train + self.epsilon)
 
             # Calculate forward output
-            self.forward_output = self.reformat(self.input_tensor_normalized * self.weights + self.bias)    
+            if self.is_convolutional:
+                self.forward_output = self.reformat(self.input_tensor_normalized * self.weights + self.bias)
+            else:
+                self.forward_output = self.input_tensor_normalized * self.weights + self.bias
+
             self.mean_test = self.momentum * self.mean_test + (1 - self.momentum) * self.mean_train
             self.variance_test = self.momentum * self.variance_test + (1 - self.momentum) * self.variance_train
 
@@ -109,10 +117,10 @@ class BatchNormalization(BaseLayer):
         gradient_mean = np.sum(gradient_input_normalized * (-1 / np.sqrt(self.variance_train + self.epsilon)), axis=0)
 
         self.backward_output = gradient_input_normalized * (
-                    1 / np.sqrt(self.variance_train + self.epsilon)) + gradient_variance * (
-                                           2 / error_tensor.shape[0]) * (
-                                           self.input_tensor - self.mean_train) + gradient_mean * (
-                                           1 / error_tensor.shape[0])
+                1 / np.sqrt(self.variance_train + self.epsilon)) + gradient_variance * (
+                                       2 / error_tensor.shape[0]) * (
+                                       self.input_tensor - self.mean_train) + gradient_mean * (
+                                       1 / error_tensor.shape[0])
 
         # Update weights and bias
         if self.optimizer is not None:
@@ -127,14 +135,15 @@ class BatchNormalization(BaseLayer):
         return self.weights, self.bias
 
     def reformat(self, tensor):
-        if self.is_convolutional:
-            
-            if len(tensor.shape) == 4:
-                return np.concatenate(tensor.reshape(tensor.shape[0], tensor.shape[1], tensor.shape[2] * tensor.shape[3]), axis=1).T
-            elif len(tensor.shape) == 2:
-                return tensor.reshape(self.input_tensor.shape[0], self.input_tensor.shape[1], self.input_tensor.shape[2], self.input_tensor.shape[3])
-            else:
-                return tensor
+        if len(tensor.shape) == 4:
+            return np.concatenate(tensor.reshape(tensor.shape[0], tensor.shape[1], tensor.shape[2] * tensor.shape[3]),
+                                  axis=1).T
+        elif len(tensor.shape) == 2:
+            return np.transpose(
+                tensor.reshape(self.input_tensor.shape[0], self.input_tensor.shape[2] * self.input_tensor.shape[3],
+                               self.input_tensor.shape[1]), (0, 2, 1)).reshape(self.input_tensor.shape[0],
+                                                                               self.input_tensor.shape[1],
+                                                                               self.input_tensor.shape[2],
+                                                                               self.input_tensor.shape[3])
         else:
             return tensor
-        
