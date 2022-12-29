@@ -8,6 +8,7 @@ class FullyConnected(BaseLayer):
 
     def __init__(self, input_size, output_size):
         super().__init__()
+        self.norm_sum = None
         self.backward_output = None
         self.input_tensor = None
         self._optimizer = None
@@ -26,7 +27,6 @@ class FullyConnected(BaseLayer):
 
         self.forward_output = np.dot(self.input_tensor, self.weights)
 
-        self.norm_sum = self.optimizer.regularizer.norm(self.weights)
         return self.forward_output
 
     @property
@@ -46,6 +46,9 @@ class FullyConnected(BaseLayer):
         self._gradient_weights = value
 
     def backward(self, error_tensor):
+
+        # self.norm_sum = self.optimizer.regularizer.norm(self.weights)
+
         self.backward_output = np.dot(error_tensor, self.weights.transpose())
         self.gradient_weights = np.dot(self.input_tensor.transpose(), error_tensor)
         if self.optimizer is not None:

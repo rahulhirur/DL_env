@@ -23,9 +23,9 @@ class Optimizer:
             print(msg)
             print('//////')
 
-    def calculate_update(self, weight_tensor, gradient_tensor):
-
-        return np.subtract(weight_tensor, (self.learning_rate * gradient_tensor))
+    # def calculate_update(self, weight_tensor, gradient_tensor):
+    #
+    #     return np.subtract(weight_tensor, (self.learning_rate * gradient_tensor))
 
     def add_regularizer(self, regularizer):
         self.regularizer = regularizer
@@ -34,11 +34,14 @@ class Optimizer:
 class Sgd(Optimizer):
     # __init__ is the constructor class
     def __init__(self, learning_rate):
+
         super().__init__(learning_rate)
 
     def calculate_update(self, weight_tensor, gradient_tensor):
-
-        return np.subtract(weight_tensor, (self.learning_rate * np.add(gradient_tensor, self.regularizer.calculate_gradient(weight_tensor))))
+        if self.regularizer is not None:
+            return np.subtract(weight_tensor, (self.learning_rate * np.add(gradient_tensor, self.regularizer.calculate_gradient(weight_tensor))))
+        else:
+            return np.subtract(weight_tensor, (self.learning_rate * gradient_tensor))
 
 
 # SgdWithMomentum
@@ -66,9 +69,9 @@ class SgdWithMomentum(Optimizer):
         # new_velocity = mom_rate * prev_velocity - learning_rate * gradient_tensor
         # weight_tensor = weight_tensor - learning_rate * alpha * calculate_gradient(weight_tensor)
         # weight_tensor = weight_tensor + new_velocity
-
         # weight_tensor = weight_tensor - learning_rate * alpha * calculate_gradient(weight_tensor) + mom_rate * prev_velocity - learning_rate * gradient_tensor
-        weight_tensor = weight_tensor - self.learning_rate * self.regularizer.calculate_gradient(weight_tensor)
+        if self.regularizer is not None:
+            weight_tensor = weight_tensor - self.learning_rate * self.regularizer.calculate_gradient(weight_tensor)
 
         self.prev_velocity = self.momentum_rate * self.prev_velocity - (self.learning_rate * gradient_tensor)
 
@@ -115,5 +118,7 @@ class Adam(Optimizer):
         fin_u = (1 / (1 - (self.rho ** self.entry))) * self.prev_moment
 
         self.entry = self.entry + 1
-
-        return np.subtract(weight_tensor, (self.learning_rate * np.add(fin_v / (fin_u ** 0.5 + np.finfo(float).eps), self.regularizer.calculate_gradient(weight_tensor))))
+        if self.regularizer is not None:
+            return np.subtract(weight_tensor, (self.learning_rate * np.add(fin_v / (fin_u ** 0.5 + np.finfo(float).eps), self.regularizer.calculate_gradient(weight_tensor))))
+        else:
+            return np.subtract(weight_tensor, (self.learning_rate * fin_v / (fin_u ** 0.5 + np.finfo(float).eps)))
