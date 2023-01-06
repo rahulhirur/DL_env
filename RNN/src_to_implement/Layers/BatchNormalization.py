@@ -69,7 +69,6 @@ class BatchNormalization(BaseLayer):
 
     def forward(self, input_tensor):
 
-
         self.input_tensor = input_tensor
         self.is_convolutional = len(input_tensor.shape) == 4
         # is_not_convolutional = len(input_tensor.shape) == 2
@@ -147,9 +146,16 @@ class BatchNormalization(BaseLayer):
 
         return self.backward_output
 
-    def initialize(self):
-        self.weights = np.ones(self.channels)
-        self.bias = np.zeros(self.channels)
+    def initialize(self, weights_initializer=None, bias_initializer=None):
+        if weights_initializer is None:
+            self.weights = np.ones(self.channels)
+        else:
+            self.weights = weights_initializer.initialize(self.channels)
+        if bias_initializer is None:
+            self.bias = np.zeros(self.channels)
+        else:
+            self.bias = bias_initializer.initialize(self.channels)
+
         return self.weights, self.bias
 
     def reformat(self, tensor):

@@ -120,12 +120,14 @@ class Conv(BaseLayer):
             for j in range(self.num_kernels):
                 self.forward_output[i][j] = self.calculate_cross_correlation(self.input_tensor[i], self.weights[j],
                                                                              self.bias[j])
+        if self.optimizer is not None:
+            if self.optimizer.regularizer is not None:
+                self.norm_sum = self.weight_optimizer.regularizer.norm(self.weights)
 
         return self.forward_output
 
     def backward(self, error_tensor):
 
-        # self.norm_sum = self.weight_optimizer.regularizer.norm(self.weights)
         self.error_tensor = error_tensor
         self.backward_output = np.zeros((self.input_tensor.shape))
 
