@@ -11,6 +11,9 @@ class RNN(BaseLayer):
     def __init__(self, input_size, hidden_size, output_size):
         super().__init__()
 
+        self.delta_h = None
+        self.delta_y = None
+        self.backward_output = None
         self.error_tensor = None
         self.input_size = input_size
         self.hidden_size = hidden_size
@@ -93,20 +96,29 @@ class RNN(BaseLayer):
 
         self.error_tensor = error_tensor
 
-        self.delta_h = np.zeros((self.hidden_size, 1))
+        self.backward_output = np.zeros((self.time_step, self.input_size))
+        # Truncated backpropagation through time
+        # delta_h is made zero at teh start of each batch
+
+        if self.memorize:
+            self.delta_h = copy.deepcopy(self.delta_h)
+        else:
+            self.delta_h = np.zeros((self.hidden_size, 1))
 
         for i in range(self.time_step-1, -1, -1):
             self.delta_y = self.error_tensor[i, :]
             
             self.delta_y = self.sigmoid.backward(self.delta_y)
             self.delta_y = self.y_layer.backward(self.delta_y)
-            self.delta_h = self.tanH.backward(np.concatenate(self.delta_y, self.delta_h))
+            # add gradient weights section here
+
+            self.delta_h = self.tanH.backward(self.delta_y.T+self.delta_h).T
             self.delta_h = self.h_layer.backward(self.delta_h)
 
-            self.backward_output[i, :] = self.delta_h
+            self.delta_y = self.delta_h[:, 0:self.input_size]
+            self.delta_h = self.delta_h[:, self.input_size: self.input_size + self.hidden_size] .T
 
-            self.delta_y = self.delta_h[0:self.input_size]
-            self.delta_h = self.delta_h[self.input_size: self.input_size+self.hidden_size]
+            self.backward_output[i, :] = self.delta_y
 
         return self.backward_output
 
@@ -119,4 +131,3 @@ class RNN(BaseLayer):
 
         self.weights = self.h_layer.weights
         return self.weights
-
