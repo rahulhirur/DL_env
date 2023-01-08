@@ -11,6 +11,7 @@ class RNN(BaseLayer):
     def __init__(self, input_size, hidden_size, output_size):
         super().__init__()
 
+        self.error_tensor = None
         self.input_size = input_size
         self.hidden_size = hidden_size
         self.output_size = output_size
@@ -71,8 +72,13 @@ class RNN(BaseLayer):
 
         self.forward_output = np.zeros((self.time_step, self.output_size))
 
+        # Memorize the hidden state
+        if self.memorize:
+            self.hidden_state = copy.deepcopy(self.hidden_state)
+        else:
+            self.hidden_state = np.zeros((self.hidden_size, 1))
+
         for i in range(self.time_step):
-            # concatenate the input tensor with the hidden state
             x_new = np.concatenate((input_tensor[i].reshape(input_tensor[i].size, 1), self.hidden_state)).T
             # Calculate the output of h layer
             h_value = self.h_layer.forward(x_new)
@@ -87,12 +93,22 @@ class RNN(BaseLayer):
 
         self.error_tensor = error_tensor
 
+        self.delta_h = np.zeros((self.hidden_size, 1))
+
         for i in range(self.time_step-1, -1, -1):
+            self.delta_y = self.error_tensor[i, :]
+            
+            self.delta_y = self.sigmoid.backward(self.delta_y)
+            self.delta_y = self.y_layer.backward(self.delta_y)
+            self.delta_h = self.tanH.backward(np.concatenate(self.delta_y, self.delta_h))
+            self.delta_h = self.h_layer.backward(self.delta_h)
 
+            self.backward_output[i, :] = self.delta_h
 
-        return self.error_tensor
+            self.delta_y = self.delta_h[0:self.input_size]
+            self.delta_h = self.delta_h[self.input_size: self.input_size+self.hidden_size]
 
-
+        return self.backward_output
 
     def initialize(self, weights_initializer=None, bias_initializer=None):
 

@@ -18,20 +18,7 @@ class FullyConnected(BaseLayer):
         self.output_size = output_size
         self.trainable = True
         # Initialize weights to carry bias in last row
-        self.weights = None
-
-    def forward(self, input_tensor):
-        # wx+b*1
-
-        self.input_tensor = np.concatenate((input_tensor, np.ones((input_tensor.shape[0], 1))), axis=1)
-
-        self.forward_output = np.dot(self.input_tensor, self.weights)
-
-        if self.optimizer is not None:
-            if self.optimizer.regularizer is not None:
-                self.norm_sum = self.optimizer.regularizer.norm(self.weights)
-
-        return self.forward_output
+        self.weights = np.random.rand(input_size+1, output_size)
 
     @property
     def optimizer(self):
@@ -48,6 +35,19 @@ class FullyConnected(BaseLayer):
     @gradient_weights.setter
     def gradient_weights(self, value):
         self._gradient_weights = value
+
+    def forward(self, input_tensor):
+        # wx+b*1
+
+        self.input_tensor = np.concatenate((input_tensor, np.ones((input_tensor.shape[0], 1))), axis=1)
+
+        self.forward_output = np.dot(self.input_tensor, self.weights)
+
+        if self.optimizer is not None:
+            if self.optimizer.regularizer is not None:
+                self.norm_sum = self.optimizer.regularizer.norm(self.weights)
+
+        return self.forward_output
 
     def backward(self, error_tensor):
 
