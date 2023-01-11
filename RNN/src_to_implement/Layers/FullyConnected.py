@@ -53,6 +53,7 @@ class FullyConnected(BaseLayer):
 
         self.backward_output = np.dot(error_tensor, self.weights.transpose())
         self.gradient_weights = np.dot(self.input_tensor.transpose(), error_tensor)
+
         if self.optimizer is not None:
             self.weights = self.optimizer.calculate_update(self.weights, self.gradient_weights)
 
