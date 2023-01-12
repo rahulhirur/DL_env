@@ -13,7 +13,7 @@ class Conv(BaseLayer):
 
         super().__init__()
 
-        self.norm_sum = None
+        self.norm_sum = 0
         self.pad_x = 0
         self.pad_y = 0
         self.as_x = 0

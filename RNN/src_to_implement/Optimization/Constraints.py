@@ -10,7 +10,7 @@ class L2_Regularizer:
         return self.alpha * weights
 
     def norm(self, weights):
-        return self.alpha * np.linalg.norm(weights, ord='fro') ** 2
+        return self.alpha * np.linalg.norm(weights) ** 2
 
 
 class L1_Regularizer:
