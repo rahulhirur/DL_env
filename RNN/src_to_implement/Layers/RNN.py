@@ -10,6 +10,9 @@ class RNN(BaseLayer):
 
     def __init__(self, input_size, hidden_size, output_size):
         super().__init__()
+        self.norm_sum = 0
+        self.hidden_state_int = None
+        self.gradient_weights_y = None
         self._optimizer1 = None
         self._optimizer2 = None
         self.h_value = None
@@ -90,26 +93,25 @@ class RNN(BaseLayer):
         self.forward_output = np.zeros((self.time_step, self.output_size))
 
         # Memorize the hidden state
-        if self.memorize:
-            if self.hidden_state is None:
-                self.hidden_state = np.zeros((self.time_step, self.hidden_size))
-            else:
-                self.hidden_state = copy.deepcopy(self.hidden_state)
-        else:
+        if not self.memorize or self.hidden_state is None:
             self.hidden_state = np.zeros((self.time_step, self.hidden_size))
+            self.hidden_state_int = np.zeros((1, self.hidden_size))
 
         for i in range(self.time_step):
-            x_new = np.concatenate((input_tensor[i].reshape(input_tensor[i].size, 1), self.hidden_state[i, :].reshape(self.hidden_state[i, :].size, 1))).T
+
+            x_new = np.concatenate((input_tensor[i].reshape(input_tensor[i].size, 1), self.hidden_state_int.reshape(self.hidden_state[i, :].size, 1))).T
             # Calculate the output of h layer
             self.h_value = self.h_layer.forward(x_new)
-            self.hidden_state[i, :] = self.tanH.forward(self.h_value.T).reshape(self.hidden_state[i, :].size)
-            if i < self.time_step - 1:
-                self.hidden_state[i + 1, :] = self.hidden_state[i, :]
+            self.hidden_state_int = self.tanH.forward(self.h_value.T).reshape(self.hidden_state[i, :].size)
+            self.hidden_state[i, :] = self.hidden_state_int
 
             # Calculate the output of y layer
             y_value = self.y_layer.forward(self.hidden_state[i, :].reshape(1, self.hidden_state[i, :].size))
 
             self.forward_output[i, :] = self.sigmoid.forward(y_value)
+            if self.optimizer is not None:
+                if self.optimizer.regularizer is not None:
+                    self.norm_sum = self.optimizer.regularizer.norm(self.weights)
 
         return self.forward_output
 
@@ -121,26 +123,26 @@ class RNN(BaseLayer):
         self.gradient_weights_y = 0
         self.backward_output = np.zeros((self.time_step, self.input_size))
         h_next = 0
-        Loss_prev = 0
         # self.weights = self.h_layer.weights
 
         for i in range(self.time_step - 1, -1, -1):
 
             # Calculate the Loss of y with respect to the sigmoid function
             self.sigmoid.forward_output = self.forward_output[i, :]
-            #delta ot
             Loss_y = self.sigmoid.backward(self.error_tensor[i, :])
             self.y_layer.input_tensor = np.concatenate((self.hidden_state[i, :], np.ones(1))).reshape(1, self.hidden_state[i, :].size + 1)
             # Calculate the Loss of y with respect to the weights
             self.delta_y = self.y_layer.backward(Loss_y.reshape(1, Loss_y.size))
             # Calculate the Loss of two branches of hidden states by adding them together
-            #Modifying the forward output of tanH layer by the hidden layer output
             self.tanH.forward_output = self.hidden_state[i, :]
             # Calculate the Loss of h with respect to the tanh function
-            #delta ht
             Loss_h = self.tanH.backward(self.delta_y + h_next)
             # modify the input of h layer
-            tmp_value = np.concatenate((self.input_tensor[i, :], self.hidden_state[i, :])).reshape(1, self.input_tensor[i, :].size + self.hidden_state[i, :].size)
+            if i == 0:
+                tmp_value = np.concatenate((self.input_tensor[i, :], np.zeros(self.hidden_size))).reshape(1, self.input_tensor[i, :].size + self.hidden_size)
+            else:
+                tmp_value = np.concatenate((self.input_tensor[i, :], self.hidden_state[i-1, :])).reshape(1, self.input_tensor[i, :].size + self.hidden_state[i, :].size)
+
             self.h_layer.input_tensor = np.concatenate((tmp_value, np.ones((tmp_value.shape[0], 1))), axis=1)
             # Calculate the Loss of h with respect to the weights
             self.delta_h = self.h_layer.backward(Loss_h)
