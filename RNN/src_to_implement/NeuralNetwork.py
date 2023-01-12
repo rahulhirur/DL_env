@@ -25,6 +25,8 @@ class NeuralNetwork:
     @phase.setter
     def phase(self, phase_value):
         self._phase = phase_value
+        for layer in self.layers:
+            layer.testing_phase = phase_value
 
     def forward(self):
         self.value_in, self.value_out = self.data_layer.next()
