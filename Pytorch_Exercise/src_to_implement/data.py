@@ -9,7 +9,7 @@ import torchvision as tv
 train_mean = [0.59685254, 0.59685254, 0.59685254]
 train_std = [0.16043035, 0.16043035, 0.16043035]
 
-
+print('Checking_Pool')
 class ChallengeDataset(Dataset):
     # TODO implement the Dataset class according to the description
     pass
