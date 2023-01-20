@@ -7,8 +7,7 @@ import numpy as np
 import torchvision as tv
 import pandas as pd
 
-train_mean = [0.59685254, 0.59685254, 0.59685254]
-train_std = [0.16043035, 0.16043035, 0.16043035]
+
 
 class ChallengeDataset(Dataset):
     # TODO implement the Dataset class according to the description
@@ -16,6 +15,8 @@ class ChallengeDataset(Dataset):
     def __init__(self, data, mode: str):
         self.data = data
         self.mode= mode
+        train_mean = [0.59685254, 0.59685254, 0.59685254]
+        train_std = [0.16043035, 0.16043035, 0.16043035]
         if mode == 'train':
             self._transform = tv.transforms.Compose([
             tv.transforms.ToPILImage(),
@@ -24,7 +25,8 @@ class ChallengeDataset(Dataset):
         elif mode == 'val':
             self._transform = tv.transforms.Compose([
             tv.transforms.ToPILImage(),
-            tv.transforms.ToTensor()])
+            tv.transforms.ToTensor(),
+            tv.transforms.Normalize(mean =train_mean, std= train_std, inplace=False)])
         else:
             print('Invalid mode given')
         
