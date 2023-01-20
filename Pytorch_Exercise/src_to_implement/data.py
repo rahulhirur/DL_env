@@ -38,6 +38,4 @@ class ChallengeDataset(Dataset):
         img = self._transform(gray2rgb(imread(self.data.filename[index])))
         labels =torch.tensor((self.data.crack[index], self.data.inactive[index]))
         return (img, labels)
-        
-    
-    pass
+
