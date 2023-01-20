@@ -24,8 +24,7 @@ class ChallengeDataset(Dataset):
         elif mode == 'val':
             self._transform = tv.transforms.Compose([
             tv.transforms.ToPILImage(),
-            tv.transforms.ToTensor(),
-            tv.transforms.Normalize(mean =train_mean, std= train_std, inplace=False)])
+            tv.transforms.ToTensor()])
         else:
             print('Invalid mode given')
         
