@@ -1,4 +1,3 @@
-
 # Build a custom Resnet Class
 
 # Import required libraries
@@ -9,31 +8,106 @@ import torch
 import torchvision.models as models
 
 
-# Define the ResNet class
-class ResNet(nn.Module):
+# Define a sub Res block class which contains a convolution layer, batch normalization layer and a relu activation function
 
-    def __init__(self):
-        super(ResNet, self).__init__()
-        self.resnet = models.resnet18(pretrained=True)
-        self.resnet.fc = nn.Linear(512, 2)
+class SubResBlock(nn.Module):
+    def __init__(self, in_channels, out_channels, kernel_size, stride, padding=1):
+        super.__init__()
+        self.in_channels = in_channels
+        self.out_channels = out_channels
+        self.kernel_size = kernel_size
+        self.stride = stride
+        self.padding = padding
+        self.res_sub_block = nn.Sequential(
+            nn.Conv2d(self.in_channels, self.out_channels, self.kernel_size, self.stride, self.padding),
+            nn.BatchNorm2d(self.out_channels),
+            nn.ReLU()
+        )
 
     def forward(self, x):
-        x = self.resnet(x)
-        return x
+        return self.res_sub_block(x)
 
-    def predict(self, x):
-        x = self.forward(x)
-        return torch.argmax(x, dim=1)
 
-    def predict_proba(self, x):
-        x = self.forward(x)
-        return F.softmax(x, dim=1)
+# Define a ResBlock class
 
-    def loss(self, x, y):
-        x = self.forward(x)
-        return F.cross_entropy(x, y)
+class ResBlock(nn.Module):
 
-    def accuracy(self, x, y):
-        pred = self.predict(x)
-        return torch.mean((pred == y).float())
+    def __init__(self, in_channels, out_channels, stride=1):
+        super().__init__()
+        self.in_channels = in_channels
+        self.out_channels = out_channels
+        self.stride = stride
+        self.fwd_conv1 = nn.Conv2d(in_channels, out_channels, kernel_size=1, stride=stride, padding=0)
+        self.fwd_batch_norm = nn.BatchNorm2d(out_channels)
+        self.fwd_relu = nn.ReLU()
 
+        self.res_block = nn.Sequential(nn.Conv2d(in_channels, out_channels, kernel_size=3, stride=stride, padding=1),
+                                       nn.BatchNorm2d(out_channels),
+                                       nn.ReLU(),
+                                       nn.Conv2d(out_channels, out_channels, kernel_size=3, stride=1, padding=1),
+                                       nn.BatchNorm2d(out_channels),
+                                       nn.ReLU()
+                                       )
+
+    # Define a ResBlock class forward function
+    def forward(self, x):
+        val1 = self.fwd_conv1(x)
+        val1 = self.fwd_batch_norm(val1)
+
+        val2 = self.res_block(x)
+        return self.fwd_relu(val2 + val1)
+
+
+# Define a ResNet class with custom ResBlock
+
+class ResNet(nn.Module):
+
+    # Define a ResNet class constructor
+    def __init__(self):
+        super().__init__()
+
+        self.model = nn.Sequential(nn.Conv2d(3, 64, kernel_size=7, stride=2),
+                                   nn.BatchNorm2d(64),
+                                   nn.ReLU(),
+                                   nn.MaxPool2d(kernel_size=3, stride=2),
+                                   ResBlock(in_channels=64, out_channels=64, stride=1),
+                                   ResBlock(in_channels=64, out_channels=128, stride=2),
+                                   ResBlock(in_channels=128, out_channels=256, stride=2),
+                                   ResBlock(in_channels=256, out_channels=512, stride=2),
+                                   nn.AvgPool2d(kernel_size=10, stride=1),
+                                   nn.Flatten(),
+                                   nn.Linear(512, 2),
+                                   nn.Sigmoid()
+                                   )
+
+    # Define a ResNet class forward function
+    def forward(self, x):
+        return self.model(x)
+
+# Define the ResNet class
+
+# class ResNet(nn.Module):
+#
+#     def __init__(self):
+#         self.resnet = models.resnet18(pretrained=True)
+#         self.resnet.fc = nn.Linear(512, 2)
+#
+#     def forward(self, x):
+#         x = self.resnet(x)
+#         return x
+#
+#     def predict(self, x):
+#         x = self.forward(x)
+#         return torch.argmax(x, dim=1)
+#
+#     def predict_proba(self, x):
+#         x = self.forward(x)
+#         return F.softmax(x, dim=1)
+#
+#     def loss(self, x, y):
+#         x = self.forward(x)
+#         return F.cross_entropy(x, y)
+#
+#     def accuracy(self, x, y):
+#         pred = self.predict(x)
+#         return torch.mean((pred == y).float())

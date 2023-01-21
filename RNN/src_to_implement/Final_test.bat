@@ -1,4 +1,4 @@
-@echo Initiating Exercise 0 Test
+@echo Initiating Exercise 3 Test
 @echo Author - Rahul Jagadish Hirur Sachin Bharadwaj M
 @echo Date - %date% Time - %time%
 
