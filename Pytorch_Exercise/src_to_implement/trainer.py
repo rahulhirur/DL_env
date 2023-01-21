@@ -176,3 +176,5 @@ class Trainer:
                     break
 
             self.epoch += 1
+
+        return self._train_losses, self._val_losses
