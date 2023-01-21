@@ -13,7 +13,7 @@ class RNN(BaseLayer):
         self.norm_sum = 0
         self.hidden_state_int = None
         self.gradient_weights_y = None
-        self._optimizer1 = None
+        self.optimizer = None
         self._optimizer2 = None
         self.h_value = None
         self.input_size = input_size
@@ -153,11 +153,10 @@ class RNN(BaseLayer):
 
             h_next = self.delta_h[:, self.input_size:self.input_size + self.hidden_size]
 
-        if self._optimizer1 is not None:
-            self.h_layer.weights = self._optimizer1.calculate_update(self.h_layer.weights, self.gradient_weights)
-
-        if self._optimizer2 is not None:
-            self.y_layer.weights = self._optimizer2.calculate_update(self.y_layer.weights, self.gradient_weights_y)
+        if self.optimizer is not None:
+            # Applying the optimizer to the weights
+            self.h_layer.weights = self.optimizer.calculate_update(self.h_layer.weights, self.gradient_weights)
+            self.y_layer.weights = self.optimizer.calculate_update(self.y_layer.weights, self.gradient_weights_y)
 
         return self.backward_output
 
