@@ -16,13 +16,13 @@ os.environ['KMP_DUPLICATE_LIB_OK']='True'
 # TODO
 
 tab = pd.read_csv('data.csv', sep=';')
-train_tab, val_tab = train_test_split(tab, test_size=0.2, random_state=42)
+train_tab, val_tab = train_test_split(tab, test_size=0.3, random_state=42)
 
 # set up data loading for the training and validation set each using t.utils.data.DataLoader and ChallengeDataset objects
 # TODO
 
-train_dl = t.utils.data.DataLoader(ChallengeDataset(train_tab, 'train'), batch_size=10)
-val_dl = t.utils.data.DataLoader(ChallengeDataset(val_tab, 'val'), batch_size=10)
+train_dl = t.utils.data.DataLoader(ChallengeDataset(train_tab, 'train'), batch_size=32)
+val_dl = t.utils.data.DataLoader(ChallengeDataset(val_tab, 'val'), batch_size=32)
 
 # create an instance of our ResNet model
 # TODO
@@ -34,7 +34,7 @@ model = model.ResNet()
 criterion = t.nn.BCELoss()
 
 # set up the optimizer (see t.optim)
-optimizer = t.optim.Adam(model.parameters(), lr=0.001)
+optimizer = t.optim.Adam(model.parameters(), lr=0.0001)
 
 # create an object of type Trainer and set its early stopping criterion
 train_1 = Trainer(model, criterion, optimizer, train_dl=train_dl, val_test_dl=val_dl, cuda=True, early_stopping_patience=20)
@@ -53,4 +53,4 @@ plt.yscale('log')
 plt.legend()
 plt.savefig('losses.png')
 
-train_1.save_onnx('checkpoints/')
+train_1.save_onnx('resnet.py')
