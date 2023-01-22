@@ -141,6 +141,7 @@ class Trainer:
                 if i % 100 == 0:
                     print('Batch: ', i, ' Loss: ', loss_val, ' F1: ', f1_val)
 
+        print('Validation Test Call complete')
         print('F1 score: ', sum(f1_scores) / len(f1_scores))
         return sum(val_loss) / len(val_loss)
 
