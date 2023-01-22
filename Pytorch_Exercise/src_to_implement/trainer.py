@@ -105,9 +105,6 @@ class Trainer:
                 y = y.cuda()
             loss = self.train_step(x, y)
 
-            if i % 200 == 0:
-                print('Batch: ', i, ' Loss: ', loss)
-
             train_loss.append(loss)
 
         return sum(train_loss) / len(train_loss)
@@ -138,10 +135,6 @@ class Trainer:
                 f1_val = f1_score(y.round().numpy(), y_val_pred.round().numpy(), average='macro', zero_division=1)
                 f1_scores.append(f1_val)
 
-                if i % 100 == 0:
-                    print('Batch: ', i, ' Loss: ', loss_val, ' F1: ', f1_val)
-
-        print('Validation Test Call complete')
         print('F1 score: ', sum(f1_scores) / len(f1_scores))
         return sum(val_loss) / len(val_loss)
 
@@ -156,7 +149,7 @@ class Trainer:
         self.epoch = 0
 
         while True:
-            print('Fit Epoch : ', self.epoch)
+            print('Epoch Number: ', self.epoch)
             # stop by epoch number
             # train for a epoch and then calculate the loss and metrics on the validation set
             # append the losses to the respective lists
