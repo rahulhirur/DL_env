@@ -132,7 +132,9 @@ class Trainer:
 
                 loss_val, y_val_pred = self.val_test_step(x, y)
                 val_loss.append(loss_val)
-                f1_val = f1_score(y.round(), y_val_pred.round(), average='macro', zero_division=1)
+                y_new = y.round().tolist()
+                y_val_pred_new = y_val_pred.round().tolist()
+                f1_val = f1_score(y_new, y_val_pred_new, average='macro', zero_division=1)
                 f1_scores.append(f1_val)
 
         print('F1 score: ', sum(f1_scores) / len(f1_scores))
