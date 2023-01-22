@@ -135,7 +135,7 @@ class Trainer:
 
                 loss_val, y_val_pred = self.val_test_step(x, y)
                 val_loss.append(loss_val)
-                f1_val = f1_score(y, y_val_pred, average='macro')
+                f1_val = f1_score(y.round().numpy(), y_val_pred.round().numpy(), average='macro', zero_division=1)
                 f1_scores.append(f1_val)
 
                 if i % 100 == 0:
@@ -168,10 +168,10 @@ class Trainer:
                 break
 
             train_loss = self.train_epoch()
-            self.val_test()
+            val_loss = self.val_test()
 
             self._train_losses.append(train_loss)
-            self._val_losses.append(sum(self._val_losses) / len(self._val_losses))
+            self._val_losses.append(val_loss)
 
             if self.epoch % 100 == 0:
                 self.save_checkpoint(self.epoch)

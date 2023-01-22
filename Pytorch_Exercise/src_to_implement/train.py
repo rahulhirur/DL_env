@@ -6,6 +6,8 @@ import numpy as np
 import model
 import pandas as pd
 from sklearn.model_selection import train_test_split
+import os
+os.environ['KMP_DUPLICATE_LIB_OK']='True'
 
 
 # load the data from the csv file and perform a train-test-split
