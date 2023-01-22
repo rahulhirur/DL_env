@@ -70,7 +70,7 @@ class Trainer:
 
         y_pred = self._model(x)
 
-        loss = self._crit(y_pred, y)
+        loss = self._crit(y_pred, y.float())
         loss.backward()
 
         self._optim.step()
@@ -99,12 +99,14 @@ class Trainer:
         # TODO
         train_loss = []
 
-        for i in range(len(self._train_dl)):
-            x, y = self._train_dl[i]
+        for i, (x, y) in tqdm (enumerate(self._train_dl)):
             if self._cuda:
                 x = x.cuda()
                 y = y.cuda()
             loss = self.train_step(x, y)
+
+            if( i % 200 == 0):
+                print('Batch: ', i, ' Loss: ', loss)
 
             train_loss.append(loss)
 
@@ -126,8 +128,7 @@ class Trainer:
 
         self._model.eval()
         with t.no_grad():
-            for i in range(len(self._val_test_dl)):
-                x, y = self._val_test_dl[i]
+            for i, (x, y) in tqdm(enumerate(self._val_test_dl)):
                 if self._cuda:
                     x = x.cuda()
                     y = y.cuda()
@@ -136,6 +137,9 @@ class Trainer:
                 val_loss.append(loss_val)
                 f1_val = f1_score(y, y_val_pred, average='macro')
                 f1_scores.append(f1_val)
+
+                if (i % 200 == 0):
+                    print('Batch: ', i, ' Loss: ', loss, ' F1: ', f1_val)
 
         print('F1 score: ', sum(f1_scores) / len(f1_scores))
         return sum(val_loss) / len(val_loss)
@@ -151,7 +155,7 @@ class Trainer:
         self.epoch = 0
 
         while True:
-
+            print('Epoch Fit: ', self.epoch)
             # stop by epoch number
             # train for a epoch and then calculate the loss and metrics on the validation set
             # append the losses to the respective lists
