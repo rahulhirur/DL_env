@@ -85,7 +85,7 @@ class Trainer:
         # TODO
 
         y_val_pred = self._model(x)
-        loss_val = self._crit(y_val_pred, y)
+        loss_val = self._crit(y_val_pred, y.float())
 
         return loss_val, y_val_pred
 
