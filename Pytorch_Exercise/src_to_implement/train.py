@@ -37,7 +37,7 @@ criterion = t.nn.BCELoss()
 optimizer = t.optim.Adam(model.parameters(), lr=0.0001)
 
 # create an object of type Trainer and set its early stopping criterion
-train_1 = Trainer(model, criterion, optimizer, train_dl=train_dl, val_test_dl=val_dl, cuda=True, early_stopping_patience=20)
+train_1 = Trainer(model, criterion, optimizer, train_dl=train_dl, val_test_dl=val_dl, cuda=True, early_stopping_patience=50)
 # TODO
 
 # go, go, go... call fit on trainer
