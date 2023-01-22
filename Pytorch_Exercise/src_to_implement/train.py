@@ -52,3 +52,5 @@ plt.plot(np.arange(len(res[1])), res[1], label='val loss')
 plt.yscale('log')
 plt.legend()
 plt.savefig('losses.png')
+
+train_1.save_onnx('checkpoints/')
