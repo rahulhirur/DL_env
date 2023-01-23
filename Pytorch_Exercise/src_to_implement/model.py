@@ -58,6 +58,98 @@ class ResBlock(nn.Module):
         return self.fwd_relu(val2 + val1)
 
 
+# Define a ResBlock class with drop out layer in the first sub block
+
+class ResBlock_d1(nn.Module):
+
+    def __init__(self, in_channels, out_channels, stride=1, drop_out=0.25):
+        super().__init__()
+        self.in_channels = in_channels
+        self.out_channels = out_channels
+        self.stride = stride
+        self.fwd_conv1 = nn.Conv2d(in_channels, out_channels, kernel_size=1, stride=stride, padding=0)
+        self.fwd_batch_norm = nn.BatchNorm2d(out_channels)
+        self.fwd_relu = nn.ReLU()
+
+        self.res_block = nn.Sequential(nn.Conv2d(in_channels, out_channels, kernel_size=3, stride=stride, padding=1),
+                                       nn.BatchNorm2d(out_channels),
+                                       nn.ReLU(),
+                                       nn.Dropout(p=drop_out),
+                                       nn.Conv2d(out_channels, out_channels, kernel_size=3, stride=1, padding=1),
+                                       nn.BatchNorm2d(out_channels),
+                                       nn.ReLU()
+                                       )
+
+    # Define a ResBlock class forward function
+    def forward(self, x):
+        val1 = self.fwd_conv1(x)
+        val1 = self.fwd_batch_norm(val1)
+
+        val2 = self.res_block(x)
+        return self.fwd_relu(val2 + val1)
+
+# Define a ResBlock class with drop out layer in the second sub block
+
+class ResBlock_d2(nn.Module):
+
+    def __init__(self, in_channels, out_channels, stride=1, drop_out=0.25):
+        super().__init__()
+        self.in_channels = in_channels
+        self.out_channels = out_channels
+        self.stride = stride
+        self.fwd_conv1 = nn.Conv2d(in_channels, out_channels, kernel_size=1, stride=stride, padding=0)
+        self.fwd_batch_norm = nn.BatchNorm2d(out_channels)
+        self.fwd_relu = nn.ReLU()
+
+        self.res_block = nn.Sequential(nn.Conv2d(in_channels, out_channels, kernel_size=3, stride=stride, padding=1),
+                                       nn.BatchNorm2d(out_channels),
+                                       nn.ReLU(),
+                                       nn.Conv2d(out_channels, out_channels, kernel_size=3, stride=1, padding=1),
+                                       nn.BatchNorm2d(out_channels),
+                                       nn.ReLU(),
+                                       nn.Dropout(p=drop_out)
+                                       )
+
+    # Define a ResBlock class forward function
+    def forward(self, x):
+        val1 = self.fwd_conv1(x)
+        val1 = self.fwd_batch_norm(val1)
+
+        val2 = self.res_block(x)
+        return self.fwd_relu(val2 + val1)
+
+# Define a ResBlock class with drop out layer in both the sub blocks
+
+class ResBlock_d3(nn.Module):
+
+    def __init__(self, in_channels, out_channels, stride=1, drop_out=0.25):
+        super().__init__()
+        self.in_channels = in_channels
+        self.out_channels = out_channels
+        self.stride = stride
+        self.fwd_conv1 = nn.Conv2d(in_channels, out_channels, kernel_size=1, stride=stride, padding=0)
+        self.fwd_batch_norm = nn.BatchNorm2d(out_channels)
+        self.fwd_relu = nn.ReLU()
+
+        self.res_block = nn.Sequential(nn.Conv2d(in_channels, out_channels, kernel_size=3, stride=stride, padding=1),
+                                       nn.BatchNorm2d(out_channels),
+                                       nn.ReLU(),
+                                       nn.Dropout(p=drop_out),
+                                       nn.Conv2d(out_channels, out_channels, kernel_size=3, stride=1, padding=1),
+                                       nn.BatchNorm2d(out_channels),
+                                       nn.ReLU(),
+                                       nn.Dropout(p=drop_out)
+                                       )
+
+    # Define a ResBlock class forward function
+    def forward(self, x):
+        val1 = self.fwd_conv1(x)
+        val1 = self.fwd_batch_norm(val1)
+
+        val2 = self.res_block(x)
+        return self.fwd_relu(val2 + val1)
+
+
 # Define a ResNet class with custom ResBlock
 
 class ResNet(nn.Module):
@@ -70,10 +162,10 @@ class ResNet(nn.Module):
                                    nn.BatchNorm2d(64),
                                    nn.ReLU(),
                                    nn.MaxPool2d(kernel_size=3, stride=2),
-                                   ResBlock(in_channels=64, out_channels=64, stride=1),
+                                   ResBlock_d1(in_channels=64, out_channels=64, stride=1),
                                    ResBlock(in_channels=64, out_channels=128, stride=2),
                                    ResBlock(in_channels=128, out_channels=256, stride=2),
-                                   ResBlock(in_channels=256, out_channels=512, stride=2),
+                                   ResBlock_d2(in_channels=256, out_channels=512, stride=2),
                                    nn.AvgPool2d(kernel_size=10, stride=1),
                                    nn.Flatten(),
                                    nn.Linear(512, 2),
@@ -83,31 +175,3 @@ class ResNet(nn.Module):
     # Define a ResNet class forward function
     def forward(self, x):
         return self.model(x)
-
-# Define the ResNet class
-
-# class ResNet(nn.Module):
-#
-#     def __init__(self):
-#         self.resnet = models.resnet18(pretrained=True)
-#         self.resnet.fc = nn.Linear(512, 2)
-#
-#     def forward(self, x):
-#         x = self.resnet(x)
-#         return x
-#
-#     def predict(self, x):
-#         x = self.forward(x)
-#         return torch.argmax(x, dim=1)
-#
-#     def predict_proba(self, x):
-#         x = self.forward(x)
-#         return F.softmax(x, dim=1)
-#
-#     def loss(self, x, y):
-#         x = self.forward(x)
-#         return F.cross_entropy(x, y)
-#
-#     def accuracy(self, x, y):
-#         pred = self.predict(x)
-#         return torch.mean((pred == y).float())
