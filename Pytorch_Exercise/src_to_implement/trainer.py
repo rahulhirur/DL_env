@@ -1,7 +1,7 @@
 from typing import List, Any
 
 import torch as t
-from sklearn.metrics import f1_score
+from sklearn.metrics import f1_score, accuracy_score
 from tqdm import tqdm
 
 
@@ -122,6 +122,7 @@ class Trainer:
         # TODO
         val_loss = []
         f1_scores = []
+        accuracy_scores = []
 
         self._model.eval()
         with t.no_grad():
@@ -136,7 +137,13 @@ class Trainer:
                 f1_val = f1_score(y.cpu(), y_val_pred.cpu(), average='macro', zero_division=1)
                 f1_scores.append(f1_val)
 
+                accuracy_val = accuracy_score(y.cpu(), y_val_pred.cpu())
+                accuracy_scores.append(accuracy_val)
+
         print('F1 score: ', sum(f1_scores) / len(f1_scores))
+        print('Accuracy score: ', sum(accuracy_scores) / len(accuracy_scores))
+        print('Validation Loss: ', sum(val_loss) / len(val_loss))
+
         return sum(val_loss) / len(val_loss)
 
     def fit(self, epochs=-1):
