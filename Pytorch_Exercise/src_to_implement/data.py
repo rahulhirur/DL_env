@@ -51,5 +51,5 @@ class ChallengeDataset(Dataset):
 
     def __getitem__(self, index):
         img = self._transform(gray2rgb(imread(self.data.iloc[index, 0])))
-        labels = torch.tensor((self.data.iloc[index, 1], self.data.iloc[index, 2]))
+        labels = t.tensor((self.data.iloc[index, 1], self.data.iloc[index, 2]))
         return img, labels
