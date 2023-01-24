@@ -1,5 +1,5 @@
 from torch.utils.data import Dataset
-import torch
+import torch as t
 from pathlib import Path
 from skimage.io import imread
 from skimage.color import gray2rgb
