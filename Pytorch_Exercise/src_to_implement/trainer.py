@@ -179,6 +179,7 @@ class Trainer:
 
             if self.epoch > self._early_stopping_patience:
                 if self._val_losses[-1] > self._val_losses[-self._early_stopping_patience]:
+                    print('Warning: Validation loss exceeding Training loss. Initiation Early Stopping')
                     break
 
             self.epoch += 1
