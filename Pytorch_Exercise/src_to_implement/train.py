@@ -13,11 +13,11 @@ os.environ['KMP_DUPLICATE_LIB_OK']='True'
 # Hyper-parameters for ResNet
 testSize = 0.3
 batchSize = 2
-learnRate = 0.001
+learnRate = 1e-5
 wtDecay = 0.0001
 Patience = 20
 Epochs = 1000
-val_threshold = 0.6
+val_threshold = 0.5
 
 # load the data from the csv file and perform a train-test-split
 # this can be accomplished using the already imported pandas and sklearn.model_selection modules
@@ -41,7 +41,7 @@ criterion = t.nn.BCELoss()
 optimizer = t.optim.Adam(model.parameters(), lr=learnRate, weight_decay=wtDecay)
 
 # create an object of type Trainer and set its early stopping criterion
-train_1 = Trainer(model, criterion, optimizer, train_dl=train_dl, val_test_dl=val_dl, cuda=True, early_stopping_patience=Patience, val_threshold=val_threshold))
+train_1 = Trainer(model, criterion, optimizer, train_dl=train_dl, val_test_dl=val_dl, cuda=True, early_stopping_patience=Patience, val_threshold=val_threshold)
 
 # go, go, go... call fit on trainer
 res = train_1.fit(epochs=Epochs)
