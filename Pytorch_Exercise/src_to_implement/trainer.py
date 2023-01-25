@@ -1,7 +1,7 @@
 from typing import List, Any
 
 import torch as t
-from sklearn.metrics import f1_score, accuracy_score
+from sklearn.metrics import f1_score, accuracy_score, precision_score
 from tqdm import tqdm
 
 
@@ -14,9 +14,10 @@ class Trainer:
                  train_dl=None,  # Training data set
                  val_test_dl=None,  # Validation (or test) data set
                  cuda=True,  # Whether to use the GPU
-                 early_stopping_patience=-1):  # The patience for early stopping
+                 early_stopping_patience=-1, val_threshold=0.5):  # The patience for early stopping
 
         self.epoch = 0
+        self.val_threshold = val_threshold
         self._train_losses = []
         self._val_losses = []
         self._model = model
@@ -87,7 +88,7 @@ class Trainer:
         y_val_pred = self._model(x)
         loss_val = self._crit(y_val_pred, y.float())
 
-        return loss_val, y_val_pred.round()
+        return loss_val, y_val_pred
 
     def train_epoch(self):
 
@@ -123,6 +124,7 @@ class Trainer:
         val_loss = []
         f1_scores = []
         accuracy_scores = []
+        precison_scores = []
 
         self._model.eval()
         with t.no_grad():
@@ -134,11 +136,17 @@ class Trainer:
                 loss_val, y_val_pred = self.val_test_step(x, y)
                 val_loss.append(loss_val)
                 
+                y_val_pred[y_val_pred > self.val_threshold] = 1
+                y_val_pred[y_val_pred <= self.val_threshold] = 0
+                
                 f1_val = f1_score(y.cpu(), y_val_pred.cpu(), average='macro', zero_division=1)
                 f1_scores.append(f1_val)
 
                 accuracy_val = accuracy_score(y.cpu(), y_val_pred.cpu())
                 accuracy_scores.append(accuracy_val)
+                
+                precison_val = precision_score(y.cpu(), y_val_pred.cpu(), average='macro', zero_division=1)
+                precison_scores.append(precison_val)
 
         print('F1 score: ', sum(f1_scores) / len(f1_scores))
         print('Accuracy score: ', sum(accuracy_scores) / len(accuracy_scores))
