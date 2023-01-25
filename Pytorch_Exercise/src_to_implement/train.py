@@ -64,10 +64,13 @@ plt.savefig(fig_file)
 train_1.save_onnx(onnx_file)
 
 # Model Text File
-txt_file = dtStamp + '.txt'
-lines = [testSize, batchSize, learnRate, wtDecay, Patience, Epochs]
-with open(txt_file, 'w') as f:
-    for line in lines:
-        f.write(line)
-        f.write('\n')
+txt_file = 'Hyp_Params_' + dtStamp + '.txt'
+f = open(txt_file, 'w')
+f.write("Test Size = {}\n".format(testSize) +
+        "Batch Size = {}\n".format(batchSize) +
+        "Learning Rate = {}\n".format(learnRate) +
+        "Weight Decay = {}\n".format(wtDecay) +
+        "Patience = {}\n".format(Patience) +
+        "Epochs = {}\n".format(Epochs) +
+        "No Dropout Layer")
 f.close
