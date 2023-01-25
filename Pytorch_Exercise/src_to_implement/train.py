@@ -15,7 +15,7 @@ testSize = 0.3
 batchSize = 2
 learnRate = 0.001
 wtDecay = 0.0001
-Patience = 50
+Patience = 20
 Epochs = 1000
 val_threshold = 0.6
 
@@ -72,5 +72,6 @@ f.write("Test Size = {}\n".format(testSize) +
         "Weight Decay = {}\n".format(wtDecay) +
         "Patience = {}\n".format(Patience) +
         "Epochs = {}\n".format(Epochs) +
+        "Validation Threshold = {}\n".format(val_threshold) +
         "No Dropout Layer")
 f.close
