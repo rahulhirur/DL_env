@@ -18,6 +18,16 @@ class AddGaussianNoise:
     def __repr__(self):
         return self.__class__.__name__ + '(mean={0}, std={1})'.format(self.mean, self.std)
 
+class AddSharpness:
+    def __init__(self, sharpness_factor = 1):
+        self.sharpness_factor = sharpness_factor
+
+    def __call__(self, tensor):
+        return tv.transforms.functional.adjust_sharpness(tensor, self.sharpness_factor)
+    def __repr__(self):
+        return self.__class__.__name__ + '(sharpness_factor ={0})'.format(self.sharpness_factor)
+
+    
 class ChallengeDataset(Dataset):
     # TODO implement the Dataset class according to the description
 
@@ -33,6 +43,7 @@ class ChallengeDataset(Dataset):
                 tv.transforms.ToTensor(),
 
                 tv.transforms.RandomHorizontalFlip(p=0.3),
+                tv.transforms.RandomApply([tv.transforms.Lambda(AddSharpness(2))], p=0.3),
                 tv.transforms.RandomVerticalFlip(p=0.3),
                 tv.transforms.RandomErasing(p=0.3, ratio=(0.54, 0.4), scale=(0.02, 0.04), value=0),
                 tv.transforms.RandomApply([tv.transforms.Lambda(AddGaussianNoise(0, .009))], p=0.1),
