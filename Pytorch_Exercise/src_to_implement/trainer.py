@@ -162,8 +162,6 @@ class Trainer:
         self._train_losses = []
         self._val_losses = []
 
-        self.epoch = 0
-
         while True:
             print('Epoch Number: ', self.epoch)
             # stop by epoch number
