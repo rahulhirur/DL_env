@@ -40,12 +40,12 @@ class ChallengeDataset(Dataset):
             self._transform = tv.transforms.Compose([
                 tv.transforms.ToPILImage(),
                 tv.transforms.RandomApply([tv.transforms.ColorJitter(brightness=0.6, contrast=0.6)], p=0.35),
+                tv.transforms.RandomApply([tv.transforms.RandomRotation(degrees=(0, 360),fill=0)], p=0.25),
+                tv.transforms.RandomApply([tv.transforms.RandomRotation(degrees=(0, 360),fill=1)], p=0.25),
                 tv.transforms.ToTensor(),
 
                 tv.transforms.RandomHorizontalFlip(p=0.35),
-                tv.transforms.RandomApply([tv.transforms.RandomRotation(degrees=(0, 360),fill=0)], p=0.25),
                 tv.transforms.RandomVerticalFlip(p=0.35),
-                tv.transforms.RandomApply([tv.transforms.RandomRotation(degrees=(0, 360),fill=1)], p=0.25),
                 tv.transforms.RandomErasing(p=0.3, ratio=(0.54, 0.4), scale=(0.02, 0.04), value=0),
                 tv.transforms.RandomApply([tv.transforms.Lambda(AddGaussianNoise(0, .009))], p=0.25),
                 tv.transforms.Normalize(mean=train_mean, std=train_std, inplace=False)])
