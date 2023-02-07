@@ -3,6 +3,7 @@ from typing import List, Any
 import torch as t
 from sklearn.metrics import f1_score, accuracy_score, precision_score
 from tqdm import tqdm
+import numpy as np
 
 
 class Trainer:
@@ -18,6 +19,7 @@ class Trainer:
 
         self.epoch = 0
         self.val_threshold = val_threshold
+        self.mean_window_size = 5
         self._train_losses = []
         self._val_losses = []
         self._model = model
@@ -162,6 +164,8 @@ class Trainer:
         self._train_losses = []
         self._val_losses = []
 
+      
+
         while True:
             print('Epoch Number: ', self.epoch)
             # stop by epoch number
@@ -180,11 +184,13 @@ class Trainer:
             self._train_losses.append(train_loss)
             self._val_losses.append(val_loss)
 
-            if self.epoch % 100 == 0:
+            if self.epoch % 50 == 0:
                 self.save_checkpoint(self.epoch)
 
-            if self.epoch > self._early_stopping_patience:
-                if self._val_losses[-1] > self._val_losses[-self._early_stopping_patience]:
+            if self.epoch > self._early_stopping_patience and self.epoch > 0:
+                # Early stopping using a mean window approach
+
+                if self._val_losses[-1] > self._val_losses[-self._early_stopping_patience] or (self.epoch>80 and val_loss<0.175):
                     print('Warning: Validation loss exceeding Training loss. Initiation Early Stopping')
                     break
 
