@@ -18,35 +18,24 @@ class AddGaussianNoise:
     def __repr__(self):
         return self.__class__.__name__ + '(mean={0}, std={1})'.format(self.mean, self.std)
 
-# class AddSharpness:
-#     def __init__(self, sharpness_factor = 1):
-#         self.sharpness_factor = sharpness_factor
-
-#     def __call__(self, tensor):
-#         return tv.transforms.functional.adjust_sharpness(tensor, self.sharpness_factor)
-#     def __repr__(self):
-#         return self.__class__.__name__ + '(sharpness_factor ={0})'.format(self.sharpness_factor)
-
-    
 class ChallengeDataset(Dataset):
     # TODO implement the Dataset class according to the description
 
     def __init__(self, data, mode: str):
         self.data = data
+        
         self.mode = mode
         train_mean = [0.59685254, 0.59685254, 0.59685254]
         train_std = [0.16043035, 0.16043035, 0.16043035]
         if mode == 'train':
             self._transform = tv.transforms.Compose([
                 tv.transforms.ToPILImage(),
-                tv.transforms.RandomApply([tv.transforms.ColorJitter(brightness=0.6, contrast=0.6)], p=0.35),
-                tv.transforms.RandomApply([tv.transforms.RandomRotation(degrees=(0, 360),fill=0)], p=0.25),
-                tv.transforms.RandomApply([tv.transforms.RandomRotation(degrees=(0, 360),fill=1)], p=0.25),
+                tv.transforms.RandomApply([tv.transforms.ColorJitter(brightness= (0.6,2), contrast=0.6)], p=0.45),
                 tv.transforms.ToTensor(),
 
-                tv.transforms.RandomHorizontalFlip(p=0.35),
-                tv.transforms.RandomVerticalFlip(p=0.35),
-                tv.transforms.RandomErasing(p=0.3, ratio=(0.54, 0.4), scale=(0.02, 0.04), value=0),
+                tv.transforms.RandomHorizontalFlip(p=0.5),
+                tv.transforms.RandomVerticalFlip(p=0.5),
+                #tv.transforms.RandomErasing(p=0.1, ratio=(0.54, 0.4), scale=(0.02, 0.04), value=0),
                 tv.transforms.RandomApply([tv.transforms.Lambda(AddGaussianNoise(0, .009))], p=0.25),
                 tv.transforms.Normalize(mean=train_mean, std=train_std, inplace=False)])
 
@@ -54,6 +43,9 @@ class ChallengeDataset(Dataset):
             self._transform = tv.transforms.Compose([
                 tv.transforms.ToPILImage(),
                 tv.transforms.ToTensor(),
+                tv.transforms.RandomHorizontalFlip(p=0.25),
+                tv.transforms.RandomVerticalFlip(p=0.25),
+                #tv.transforms.RandomApply([tv.transforms.Lambda(AddGaussianNoise(0, .009))], p=0.05),
                 tv.transforms.Normalize(mean=train_mean, std=train_std, inplace=False)])
         else:
             print('Invalid mode given')
