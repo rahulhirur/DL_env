@@ -55,4 +55,4 @@ class FullyConnected(BaseLayer):
         if self.optimizer is not None:
             self.weights = self.optimizer.calculate_update(self.weights, self.gradient_weights)
 
-        return self.backward_output[:, :-1]
+        return self.backward_output[:, :-1] # ':' selects all rows, ':-1' all but the last column
