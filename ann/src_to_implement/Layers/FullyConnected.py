@@ -30,6 +30,7 @@ class FullyConnected(BaseLayer):
         self.forward_output = None
         self.backward_output = None
 
+        
     def forward(self, input_tensor):
         
         """"
@@ -48,6 +49,7 @@ class FullyConnected(BaseLayer):
         
         return self.forward_output
 
+    
     """"
     setter & getter property optimizer: 
         sets and returns the protected member _optimizer for this layer
