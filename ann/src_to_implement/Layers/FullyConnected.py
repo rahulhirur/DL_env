@@ -38,13 +38,14 @@ class FullyConnected(BaseLayer):
         
         - input_tensor: rows = batch_size, columns = input_size
         - batch_size: number of inputs processed simultaneously
-        - output_size: parameter of the layer specifying the number of columns of the output
+        - output_size: number of columns of the output
         
         - Operation: wx+b*1 
         - Same number of rows as input_tensor and an additional column of ones
         """"
         
-        self.input_tensor = np.concatenate((input_tensor, np.ones((input_tensor.shape[0], 1))), axis=1)
+        self.input_tensor = np.concatenate((input_tensor, 
+                                            np.ones((input_tensor.shape[0], 1))), axis=1)
         self.forward_output = np.dot(self.input_tensor, self.weights)
         
         return self.forward_output
