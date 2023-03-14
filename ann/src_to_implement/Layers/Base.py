@@ -1,4 +1,3 @@
-# Base Layer Creation
 import numpy as np
 
 
