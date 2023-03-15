@@ -43,8 +43,8 @@ class FullyConnected(BaseLayer):
         - batch_size: number of inputs processed simultaneously
         - output_size: number of columns of the output
         
-        - Operation: wx+b*1 
-        - Same number of rows as input_tensor and an additional column of ones
+        - A column of ones is connected to the input_tensor in order to:
+          multiply it with the last row of biases in the weight matrix
         """"
         
         self.input_tensor = np.concatenate((input_tensor, 
