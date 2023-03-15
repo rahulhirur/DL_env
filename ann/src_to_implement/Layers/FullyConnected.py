@@ -22,8 +22,11 @@ class FullyConnected(BaseLayer):
         self._optimizer = None
         self._gradient_weights = None
         
-        # Initialize weights uniformly random in the range [0, 1) 
-        # It carries bias in last row
+        """"
+        - Initialize weights uniformly random in the range [0, 1) 
+        - Including bias in last row of weight matrix allows:
+          single matrix multiplication
+        """
         self.weights = np.random.rand(self.input_size + 1, 
                                       self.output_size)
         
