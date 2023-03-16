@@ -1,12 +1,10 @@
-# Optimizer File
-
 import numpy as np
 
 
-# Creating the SGD Class
 class Sgd:
-    # __init__ is the constructor class
+    
     def __init__(self, learning_rate):
+        
         try:
             if type(learning_rate) == int or type(learning_rate) == float:
                 learning_rate = float(learning_rate)
@@ -24,10 +22,11 @@ class Sgd:
 
         return np.subtract(weight_tensor, (self.learning_rate * gradient_tensor))
 
-# SgdWithMomentum
+
 class SgdWithMomentum:
-    # __init__ is the constructor class
+    
     def __init__(self, learning_rate, momentum_rate):
+        
         try:
             if type(learning_rate) == int or type(learning_rate) == float:
                 learning_rate = float(learning_rate)
@@ -51,13 +50,12 @@ class SgdWithMomentum:
     def calculate_update(self, weight_tensor, gradient_tensor):
 
         self.prev_velocity = self.momentum_rate * self.prev_velocity - (self.learning_rate * gradient_tensor)
+        
         return np.add(weight_tensor, self.prev_velocity)
 
 
-# Adam Optimizers
 class Adam:
 
-    # __init__ is the constructor class
     def __init__(self, learning_rate, mu, rho):
         try:
             if type(learning_rate) == int or type(learning_rate) == float:
