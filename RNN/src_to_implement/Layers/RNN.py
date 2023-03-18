@@ -1,5 +1,4 @@
 import numpy as np
-
 from Layers import TanH, Sigmoid, FullyConnected
 from Layers.Base import BaseLayer  # BaseLayer is the base class for all layers
 import warnings
@@ -9,6 +8,7 @@ import copy
 class RNN(BaseLayer):
 
     def __init__(self, input_size, hidden_size, output_size):
+        
         super().__init__()
         self.norm_sum = 0
         self.hidden_state_int = None
