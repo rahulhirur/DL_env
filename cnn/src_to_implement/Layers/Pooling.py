@@ -43,8 +43,8 @@ class Pooling(BaseLayer):
                 for wi in range(self.pooling_output_width):
                     for hi in range(self.pooling_output_height):
                         forward_output[b, c, wi, hi] = np.max(self.input_tensor[b, c,
-                                                              wi * self.stride_shape[0]: wi * self.stride_shape[0] + self.pooling_shape[0],
-                                                              hi * self.stride_shape[1]: hi * self.stride_shape[1] + self.pooling_shape[1]])
+                                                              wi * self.stride_shape[0] : wi * self.stride_shape[0] + self.pooling_shape[0],
+                                                              hi * self.stride_shape[1] : hi * self.stride_shape[1] + self.pooling_shape[1]])
         return forward_output
     
 
@@ -61,15 +61,15 @@ class Pooling(BaseLayer):
                 for wi in range(self.pooling_output_width):
                     for hi in range(self.pooling_output_height):
                         self.wi_m, self.hi_m = np.where(np.max(self.input_tensor[b, c, 
-                                                                                 wi * self.stride_shape[0]: wi * self.stride_shape[0] + self.pooling_shape[0], 
-                                                                                 hi * self.stride_shape[1]: hi * self.stride_shape[1] + self.pooling_shape[1]]) 
+                                                                                 wi * self.stride_shape[0] : wi * self.stride_shape[0] + self.pooling_shape[0], 
+                                                                                 hi * self.stride_shape[1] : hi * self.stride_shape[1] + self.pooling_shape[1]]) 
                                                         == self.input_tensor[b, c, 
-                                                                             wi * self.stride_shape[0]: wi * self.stride_shape[0] + self.pooling_shape[0], 
-                                                                             hi * self.stride_shape[1]: hi * self.stride_shape[1] + self.pooling_shape[1]])
+                                                                             wi * self.stride_shape[0] : wi * self.stride_shape[0] + self.pooling_shape[0], 
+                                                                             hi * self.stride_shape[1] : hi * self.stride_shape[1] + self.pooling_shape[1]])
                         self.wi_m, self.hi_m = self.wi_m[0], self.hi_m[0]
                         backward_output[b, c, 
-                                        wi * self.stride_shape[0]: wi * self.stride_shape[0] + self.pooling_shape[0], 
-                                        hi * self.stride_shape[1]: hi * self.stride_shape[1] + self.pooling_shape[1]][self.wi_m, self.hi_m] 
+                                        wi * self.stride_shape[0] : wi * self.stride_shape[0] + self.pooling_shape[0], 
+                                        hi * self.stride_shape[1] : hi * self.stride_shape[1] + self.pooling_shape[1]][self.wi_m, self.hi_m] 
                         += error_tensor[b, c, wi, hi]
 
         return backward_output
