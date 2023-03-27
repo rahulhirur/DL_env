@@ -15,7 +15,8 @@ class Flatten(BaseLayer):
     def forward(self, input_tensor):
 
         self.fwd_shape = input_tensor.shape
-        self.forward_output = input_tensor.reshape(input_tensor.shape[0], int(input_tensor.size/input_tensor.shape[0]))
+        self.forward_output = input_tensor.reshape(input_tensor.shape[0], 
+                                                   int(input_tensor.size/input_tensor.shape[0]))
         return self.forward_output
 
     
