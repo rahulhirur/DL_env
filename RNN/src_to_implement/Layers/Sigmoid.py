@@ -15,7 +15,5 @@ class Sigmoid(BaseLayer):
         return self.forward_output
 
     def backward(self, error_tensor):
-
         self.backward_output = error_tensor * self.forward_output * (1 - self.forward_output)
-
         return self.backward_output
